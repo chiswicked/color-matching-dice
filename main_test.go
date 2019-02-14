@@ -34,6 +34,39 @@ func TestFmtColor(t *testing.T) {
 	}
 }
 
+var positionTests = []struct {
+	in  die
+	out int
+}{
+	{
+		in:  die{red, green, blue, yellow, yellow, blue},
+		out: int(red + green + blue + yellow + yellow + blue),
+	},
+	{
+		in:  die{red, red, blue, yellow, yellow, red},
+		out: int(red + red + blue + yellow + yellow + red),
+	},
+	{
+		in:  die{red, blue, blue, yellow, green, blue},
+		out: int(red + blue + blue + yellow + green + blue),
+	},
+}
+
+func TestPosition(t *testing.T) {
+	for _, tc := range positionTests {
+		t.Run("Rotate die 6x", func(t *testing.T) {
+			res := 0
+			for i := 0; i < 6; i++ {
+				tc.in.position(i)
+				res += int(tc.in[0])
+			}
+			if res != tc.out {
+				t.Errorf("\ngot  %v\nwant %v", res, tc.out)
+			}
+		})
+	}
+}
+
 var allSidesUniqueTests = []struct {
 	in  dice
 	out bool
