@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -72,7 +73,7 @@ func rotPerms(row dice) {
 									if row.allSidesUnique() {
 										m.Lock()
 										sol++
-										fmt.Printf("\nSolution #%v\n\n", sol)
+										fmt.Printf("\nSolution #%v\n", sol)
 										row.string()
 										m.Unlock()
 									}
@@ -147,7 +148,9 @@ func fmtColor(i color) string {
 }
 
 func (d *dice) string() {
+	fmt.Println(strings.Repeat("-", 78))
 	fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n", "Die", "Top", "Left", "Front", "Right", "Rear", "Bottom")
+	fmt.Println(strings.Repeat("-", 78))
 	for num, die := range d {
 		fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n",
 			fmt.Sprintf("#%v", num+1),
@@ -158,4 +161,5 @@ func (d *dice) string() {
 			fmtColor(die[4]),
 			fmtColor(die[5]))
 	}
+	fmt.Println(strings.Repeat("-", 78))
 }
