@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -20,8 +19,6 @@ const (
 	yellow
 )
 
-var wg sync.WaitGroup
-var m sync.Mutex
 var perm int
 var sol int
 
@@ -51,13 +48,11 @@ func main() {
 						continue
 					}
 					rowPerm := dice{set[d0].copy(), set[d1].copy(), set[d2].copy(), set[d3].copy()}
-					wg.Add(1)
-					go rotPerms(rowPerm)
+					rotPerms(rowPerm)
 				}
 			}
 		}
 	}
-	wg.Wait()
 	fmt.Printf("%v permutations checked, %v solutions found. Processing took %v\n",
 		perm,
 		sol,
@@ -67,7 +62,6 @@ func main() {
 // Takes an ordered row of dice and iterates through all dice rotation permutations.
 // If a match is found, prints out the dice positions.
 func rotPerms(row dice) {
-	defer wg.Done()
 	for pos0 := 0; pos0 < 6; pos0++ { // Die 1 - What's on top
 		for r0 := 0; r0 < 4; r0++ { // Die 1 - Rotate Y
 			for pos1 := 0; pos1 < 6; pos1++ { // Die 2 - What's on top
@@ -78,10 +72,8 @@ func rotPerms(row dice) {
 								for r3 := 0; r3 < 4; r3++ { // Die 4 - Rotate Y
 									perm++
 									if row.allSidesUnique() {
-										m.Lock()
 										sol++
 										row.string(sol)
-										m.Unlock()
 									}
 									row[3].rotateY()
 								}
