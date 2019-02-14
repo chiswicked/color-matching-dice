@@ -18,6 +18,10 @@ const (
 	yellow
 )
 
+var wg sync.WaitGroup
+var m sync.Mutex
+var sol int
+
 func main() {
 
 	// Base set from which copies are created
@@ -27,9 +31,7 @@ func main() {
 	set[2] = die{red, yellow, yellow, blue, red, green}
 	set[3] = die{yellow, blue, green, red, red, green}
 
-	sol := 0
-	var wg sync.WaitGroup
-	var m sync.Mutex
+	sol = 0 // Number of solutions found
 
 	for d0 := 0; d0 < 4; d0++ { // Die in position 1
 		for d1 := 0; d1 < 4; d1++ { // Die in position 2
@@ -44,47 +46,52 @@ func main() {
 					if d3 == d0 || d3 == d1 || d3 == d2 { // Can't repeat the same die
 						continue
 					}
+					rowPerm := dice{set[d0].copy(), set[d1].copy(), set[d2].copy(), set[d3].copy()}
 					wg.Add(1)
-					go func(n0, n1, n2, n3 int) {
-						defer wg.Done()
-						res := dice{set[n0].copy(), set[n1].copy(), set[n2].copy(), set[n3].copy()}
-						for pos0 := 0; pos0 < 6; pos0++ { // Die 1 - What's on top
-							for r0 := 0; r0 < 4; r0++ { // Die 1 - Rotate Y
-								for pos1 := 0; pos1 < 6; pos1++ { // Die 2 - What's on top
-									for r1 := 0; r1 < 4; r1++ { // Die 2 - Rotate Y
-										for pos2 := 0; pos2 < 6; pos2++ { // Die 3 - What's on top
-											for r2 := 0; r2 < 4; r2++ { // Die 3 - Rotate Y
-												for pos3 := 0; pos3 < 6; pos3++ { // Die 4 - What's on top
-													for r3 := 0; r3 < 4; r3++ { // Die 4 - Rotate Y
-														if res.allSidesUnique() {
-															m.Lock()
-															sol++
-															fmt.Printf("\nSolution #%v\n\n", sol)
-															res.string()
-															m.Unlock()
-														}
-														res[3].rotateY()
-													}
-													res[3].position(pos3)
-												}
-												res[2].rotateY()
-											}
-											res[2].position(pos2)
-										}
-										res[1].rotateY()
-									}
-									res[1].position(pos1)
-								}
-								res[0].rotateY()
-							}
-							res[0].position(pos0)
-						}
-					}(d0, d1, d2, d3)
+					go rotPerms(rowPerm)
 				}
 			}
 		}
 	}
 	wg.Wait()
+}
+
+// Takes an ordered row of dice and iterates through all permutations.
+// If a match is found, prints out the dice positions.
+func rotPerms(row dice) {
+	defer wg.Done()
+
+	for pos0 := 0; pos0 < 6; pos0++ { // Die 1 - What's on top
+		for r0 := 0; r0 < 4; r0++ { // Die 1 - Rotate Y
+			for pos1 := 0; pos1 < 6; pos1++ { // Die 2 - What's on top
+				for r1 := 0; r1 < 4; r1++ { // Die 2 - Rotate Y
+					for pos2 := 0; pos2 < 6; pos2++ { // Die 3 - What's on top
+						for r2 := 0; r2 < 4; r2++ { // Die 3 - Rotate Y
+							for pos3 := 0; pos3 < 6; pos3++ { // Die 4 - What's on top
+								for r3 := 0; r3 < 4; r3++ { // Die 4 - Rotate Y
+									if row.allSidesUnique() {
+										m.Lock()
+										sol++
+										fmt.Printf("\nSolution #%v\n\n", sol)
+										row.string()
+										m.Unlock()
+									}
+									row[3].rotateY()
+								}
+								row[3].position(pos3)
+							}
+							row[2].rotateY()
+						}
+						row[2].position(pos2)
+					}
+					row[1].rotateY()
+				}
+				row[1].position(pos1)
+			}
+			row[0].rotateY()
+		}
+		row[0].position(pos0)
+	}
 }
 
 // Using different copies for concurrent processing
@@ -124,7 +131,7 @@ func (d *dice) allSidesUnique() bool {
 	return true
 }
 
-func printColor(i color) string {
+func fmtColor(i color) string {
 	switch i {
 	case 1:
 		return "Red"
@@ -144,12 +151,11 @@ func (d *dice) string() {
 	for num, die := range d {
 		fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n",
 			fmt.Sprintf("#%v", num+1),
-			printColor(die[0]),
-			printColor(die[1]),
-			printColor(die[2]),
-			printColor(die[3]),
-			printColor(die[4]),
-			printColor(die[5]))
+			fmtColor(die[0]),
+			fmtColor(die[1]),
+			fmtColor(die[2]),
+			fmtColor(die[3]),
+			fmtColor(die[4]),
+			fmtColor(die[5]))
 	}
-
 }

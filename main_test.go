@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-var printColorTests = []struct {
+var fmtColorTests = []struct {
 	in  color
 	out string
 }{
@@ -23,10 +23,10 @@ var printColorTests = []struct {
 	},
 }
 
-func TestPrintColor(t *testing.T) {
-	for _, tc := range printColorTests {
+func TestFmtColor(t *testing.T) {
+	for _, tc := range fmtColorTests {
 		t.Run(tc.out, func(t *testing.T) {
-			res := printColor(tc.in)
+			res := fmtColor(tc.in)
 			if res != tc.out {
 				t.Errorf("\ngot  %v\nwant %v", res, tc.out)
 			}
