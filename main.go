@@ -123,6 +123,8 @@ func (d *die) rotateZ() {
 	d[0], d[1], d[5], d[3] = d[3], d[0], d[1], d[5]
 }
 
+// Returns whether the dice arrangement gives a match
+// (no color repeat itslef on either side)
 func (d *dice) allSidesUnique() bool {
 	for side := 1; side < 5; side++ {
 		if d[0][side]+d[1][side]+d[2][side]+d[3][side] != 15 {
@@ -132,6 +134,7 @@ func (d *dice) allSidesUnique() bool {
 	return true
 }
 
+// Gives the string representation of a color
 func fmtColor(i color) string {
 	switch i {
 	case 1:
@@ -147,6 +150,7 @@ func fmtColor(i color) string {
 	}
 }
 
+// Prints out the dice positions to Stdout
 func (d *dice) string() {
 	fmt.Println(strings.Repeat("-", 78))
 	fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n", "Die", "Top", "Left", "Front", "Right", "Rear", "Bottom")
