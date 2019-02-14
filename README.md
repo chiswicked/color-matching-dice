@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/chiswicked/color-matching-dice)](https://goreportcard.com/report/github.com/chiswicked/color-matching-dice)
 # Color Matching Dice
 Arrange 4 colored side dice in a row so that no color repeats itself on either side.
 
