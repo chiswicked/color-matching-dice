@@ -136,10 +136,10 @@ func printColor(i color) string {
 }
 
 func (d *dice) string() {
-	fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n", "Die #", "Top", "Left", "Front", "Right", "Rear", "Bottom")
+	fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n", "Die", "Top", "Left", "Front", "Right", "Rear", "Bottom")
 	for num, die := range d {
 		fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n",
-			num+1,
+			fmt.Sprintf("#%v", num+1),
 			printColor(die[0]),
 			printColor(die[1]),
 			printColor(die[2]),
