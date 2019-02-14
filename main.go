@@ -19,6 +19,8 @@ const (
 )
 
 func main() {
+
+	// Base set from which copies are created
 	var set dice
 	set[0] = die{green, yellow, blue, yellow, red, yellow}
 	set[1] = die{green, blue, blue, yellow, red, green}
@@ -85,12 +87,14 @@ func main() {
 	wg.Wait()
 }
 
+// Using different copies for concurrent processing
 func (d *die) copy() die {
 	var res [6]color
 	copy(res[:], d[:])
 	return res
 }
 
+// 6 alternating X and Z rotations iterate through all sides
 func (d *die) position(i int) {
 	if i%2 == 0 {
 		d.rotateX()
