@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 )
 
 type die [6]color // 0: top, 1: left, 2: front, 3: right, 4: rear, 5: bottom
@@ -21,10 +22,11 @@ const (
 
 var wg sync.WaitGroup
 var m sync.Mutex
+var perm int
 var sol int
 
 func main() {
-
+	started := time.Now()
 	// Base set from which copies are created
 	var set dice
 	set[0] = die{green, yellow, blue, yellow, red, yellow}
@@ -32,7 +34,8 @@ func main() {
 	set[2] = die{red, yellow, yellow, blue, red, green}
 	set[3] = die{yellow, blue, green, red, red, green}
 
-	sol = 0 // Number of solutions found
+	perm = 0 // Number of permutations checked
+	sol = 0  // Number of solutions found
 
 	for d0 := 0; d0 < 4; d0++ { // Die in position 1
 		for d1 := 0; d1 < 4; d1++ { // Die in position 2
@@ -55,13 +58,16 @@ func main() {
 		}
 	}
 	wg.Wait()
+	fmt.Printf("%v permutations checked, %v solutions found. Processing took %v\n",
+		perm,
+		sol,
+		time.Since(started))
 }
 
-// Takes an ordered row of dice and iterates through all permutations.
+// Takes an ordered row of dice and iterates through all dice rotation permutations.
 // If a match is found, prints out the dice positions.
 func rotPerms(row dice) {
 	defer wg.Done()
-
 	for pos0 := 0; pos0 < 6; pos0++ { // Die 1 - What's on top
 		for r0 := 0; r0 < 4; r0++ { // Die 1 - Rotate Y
 			for pos1 := 0; pos1 < 6; pos1++ { // Die 2 - What's on top
@@ -70,6 +76,7 @@ func rotPerms(row dice) {
 						for r2 := 0; r2 < 4; r2++ { // Die 3 - Rotate Y
 							for pos3 := 0; pos3 < 6; pos3++ { // Die 4 - What's on top
 								for r3 := 0; r3 < 4; r3++ { // Die 4 - Rotate Y
+									perm++
 									if row.allSidesUnique() {
 										m.Lock()
 										sol++
@@ -151,7 +158,7 @@ func fmtColor(i color) string {
 
 // Prints out the dice positions to Stdout
 func (d *dice) string(sol int) {
-	fmt.Printf("\nSolution #%v\n", sol)
+	fmt.Printf("Solution #%v\n", sol)
 	fmt.Println(strings.Repeat("-", 78))
 	fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n", "Die", "Top", "Left", "Front", "Right", "Rear", "Bottom")
 	fmt.Println(strings.Repeat("-", 78))
@@ -165,5 +172,5 @@ func (d *dice) string(sol int) {
 			fmtColor(die[4]),
 			fmtColor(die[5]))
 	}
-	fmt.Println(strings.Repeat("-", 78))
+	fmt.Println(strings.Repeat("-", 78) + "\n")
 }
