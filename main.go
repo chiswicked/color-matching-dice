@@ -73,8 +73,7 @@ func rotPerms(row dice) {
 									if row.allSidesUnique() {
 										m.Lock()
 										sol++
-										fmt.Printf("\nSolution #%v\n", sol)
-										row.string()
+										row.string(sol)
 										m.Unlock()
 									}
 									row[3].rotateY()
@@ -151,7 +150,8 @@ func fmtColor(i color) string {
 }
 
 // Prints out the dice positions to Stdout
-func (d *dice) string() {
+func (d *dice) string(sol int) {
+	fmt.Printf("\nSolution #%v\n", sol)
 	fmt.Println(strings.Repeat("-", 78))
 	fmt.Printf("|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|%-10v|\n", "Die", "Top", "Left", "Front", "Right", "Rear", "Bottom")
 	fmt.Println(strings.Repeat("-", 78))
